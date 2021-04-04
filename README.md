@@ -66,7 +66,6 @@ const Counter = () => {
       <p>userId: {todo.userId}</p>
       <p>title: {todo.title}</p>
       <p>completed: {todo.completed}</p>
-      <p>Sum: {sum}</p>
       <button onClick={completeTodo}>Toggle Complete</button>
     </div>
   );
