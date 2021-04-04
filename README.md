@@ -7,6 +7,7 @@ A simple statemanagement library for react.
 `npm i @pyros2097/atoms`
 
 ## Usage
+
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -38,4 +39,43 @@ const Counter = () => {
 };
 
 ReactDOM.render(<Counter />, document.getElementById('root'));
+```
+
+## Async
+
+```js
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom';
+import { asyncAtom, useAsyncAtom } from '@pyros2097/atoms';
+
+const todoAtom = asyncAtom(async ({ id }) => {
+  const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
+  return await res.json();
+});
+
+const completeTodo = () => {
+  todoAtom.update(todo => ({ ...todo, completed: !todo.completed }));
+};
+
+const Counter = () => {
+  const todo = useAsyncAtom(todoAtom, { id: 1 });
+
+  return (
+    <div>
+      <p>id: {todo.id}</p>
+      <p>userId: {todo.userId}</p>
+      <p>title: {todo.title}</p>
+      <p>completed: {todo.completed}</p>
+      <p>Sum: {sum}</p>
+      <button onClick={completeTodo}>Toggle Complete</button>
+    </div>
+  );
+};
+
+ReactDOM.render(
+  <Suspense fallback={<div>Loading</div>}>
+    <Counter />
+  </Suspense>,
+  document.getElementById('root')
+);
 ```
