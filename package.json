@@ -1,5 +1,7 @@
 {
-  "version": "0.2.0",
+  "name": "atoms-state",
+  "author": "pyros.sh",
+  "version": "0.3.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -15,13 +17,12 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build",
+    "build": "tsc src/*.* -d --target esnext --module commonjs --moduleResolution node --outDir dist",
     "test": "tsdx test",
     "lint": "tsdx lint --fix",
-    "prepare": "tsdx build",
+    "prepare": "npm run build",
     "size": "size-limit",
-    "analyze": "size-limit --why",
-    "deploy": "np"
+    "analyze": "size-limit --why"
   },
   "peerDependencies": {
     "react": "*"
@@ -32,34 +33,15 @@
     }
   },
   "prettier": {
-    "printWidth": 80,
+    "printWidth": 160,
     "semi": true,
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "repository": {
-    "url": "git@github.com:pyros2097/atoms.git"
-  },
-  "name": "@pyros2097/atoms",
-  "author": "pyros2097",
-  "module": "dist/atoms.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/atoms.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/atoms.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.10.2",
     "@types/react": "17.0.2",
     "husky": "^6.0.0",
-    "np": "^7.4.0",
     "react": "17.0.2",
-    "size-limit": "^4.10.2",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",
     "typescript": "^4.2.3"

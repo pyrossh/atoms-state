@@ -114,10 +114,7 @@ export const useAsyncAtom = <P, S>(a: AsyncAtom<P, S>, params: P) => {
 type PromiseFunc<S, P> = (p: P) => Promise<S>;
 
 const usePromiseCache: Map<Function, Map<string, any>> = new Map();
-export const usePromise = <S, P>(
-  fn: PromiseFunc<S, P>,
-  params: P
-): [S | null, (v: S) => void] => {
+export const usePromise = <S, P>(fn: PromiseFunc<S, P>, params: P): [S | null, (v: S) => void] => {
   const [data, setData] = useState<boolean>(false);
   const fnCache = usePromiseCache.get(fn) || new Map();
   if (!usePromiseCache.get(fn)) {

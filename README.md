@@ -1,10 +1,10 @@
 # atoms
 
-[![Version](https://img.shields.io/npm/v/@pyros2097/atoms?style=flat-square&color=blue)](https://www.npmjs.com/package/pyros2097/atoms)
+[![Version](https://img.shields.io/npm/v/@pyros2097/atoms?style=flat-square&color=blue)](https://www.npmjs.com/package/atoms-state)
 
 A simple statemanagement library for react.
 
-`npm i @pyros2097/atoms`
+`npm i atoms-state` 
 
 ## Usage
 
