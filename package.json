@@ -1,7 +1,8 @@
 {
   "name": "atoms-state",
   "author": "pyros.sh",
-  "version": "0.4.0",
+  "description": "A simple statemanagement library for react",
+  "version": "0.4.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
