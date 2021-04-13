@@ -1,7 +1,7 @@
 {
   "name": "atoms-state",
   "author": "pyros.sh",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -24,12 +24,10 @@
   ],
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsc src/*.* -d --target esnext --module commonjs --moduleResolution node --outDir dist",
+    "build": "tsc src/*.* -d --target es6 --module commonjs --moduleResolution node --outDir dist",
     "test": "tsdx test",
     "lint": "tsdx lint --fix",
-    "prepare": "npm run build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "prepare": "npm run build"
   },
   "peerDependencies": {
     "react": "*"
