@@ -1,6 +1,6 @@
 # atoms
 
-[![Version](https://img.shields.io/npm/v/@pyros2097/atoms?style=flat-square&color=blue)](https://www.npmjs.com/package/atoms-state)
+[![Version](https://img.shields.io/npm/v/atoms-state?style=flat-square&color=blue)](https://www.npmjs.com/package/atoms-state)
 
 A simple statemanagement library for react.
 
@@ -11,7 +11,7 @@ A simple statemanagement library for react.
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { atom, useAtom } from '@pyros2097/atoms';
+import { atom, useAtom } from 'atoms-state';
 
 const countAtom = atom(10);
 const sumAtom = atom(get => get(countAtom) + 10);
@@ -46,7 +46,7 @@ ReactDOM.render(<Counter />, document.getElementById('root'));
 ```js
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { asyncAtom, useAsyncAtom } from '@pyros2097/atoms';
+import { asyncAtom, useAsyncAtom } from 'atoms-state';
 
 const todoAtom = asyncAtom(async ({ id }) => {
   const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
