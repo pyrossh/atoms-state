@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 export type Atom<S> = {
   getValue: () => S;
   subscribe: (listener: (value: S) => void) => () => void;
@@ -7,6 +5,16 @@ export type Atom<S> = {
 };
 export type AtomGetter = <V>(atom: Atom<V>) => V;
 export type DerivedAtomReader<S> = (read: AtomGetter) => S;
+
+export type Destructor = () => void | undefined;
+export type EffectCallback = () => (void | Destructor);
+export type SetStateAction<S> = S | ((prevState: S) => S);
+export type Dispatch<A> = (value: A) => void;
+export type DependencyList = ReadonlyArray<any>;
+export type StateContainerProps = {
+  useState: <S>(initialState: S | (() => S)) => [S, Dispatch<SetStateAction<S>>];
+  useEffect: (effect: EffectCallback, deps?: DependencyList) => void;
+};
 
 export const atom = <S>(initial: S | DerivedAtomReader<S>): Atom<S> => {
   let value: S;
@@ -44,16 +52,6 @@ export const atom = <S>(initial: S | DerivedAtomReader<S>): Atom<S> => {
   };
 };
 
-export const useAtom = <S>(atom: Atom<S>): S => {
-  const [data, setData] = useState<S>(atom.getValue());
-  useEffect(() => {
-    return atom.subscribe(value => {
-      setData(value);
-    });
-  }, []);
-  return data;
-};
-
 export type AsyncAtom<P, S> = {
   compute: (p: P) => S | Promise<S>;
   fetch: (p: P) => Promise<S>;
@@ -61,21 +59,35 @@ export type AsyncAtom<P, S> = {
   update: (fn: (oldValue: S) => S) => void;
 };
 
+export const asyncAtomCache = new Map();
+
 export const asyncAtom = <P, S>(fn: (p: P) => Promise<S>): AsyncAtom<P, S> => {
   let value: S | Promise<S>;
   let params: any;
   const subs = new Set<(value: S) => void>();
+  const fnCache = asyncAtomCache.get(fn) || new Map();
+  if (!asyncAtomCache.get(fn)) {
+    asyncAtomCache.set(fn, fnCache);
+  }
   return {
     compute(p: P): S | Promise<S> {
-      if (JSON.stringify(p) !== JSON.stringify(params)) {
+      const key = JSON.stringify(p);
+      const cacheValue = fnCache.get(key);
+      if (typeof cacheValue !== 'undefined') {
+        return cacheValue;
+      }
+      if (key !== JSON.stringify(params)) {
         params = p;
         value = fn(p);
+        fnCache.set(key, value);
         value
           .then(res => {
             value = res;
+            fnCache.set(key, res);
           })
           .catch(err => {
             value = err;
+            fnCache.set(key, err);
           });
       }
       return value;
@@ -88,7 +100,9 @@ export const asyncAtom = <P, S>(fn: (p: P) => Promise<S>): AsyncAtom<P, S> => {
       return () => subs.delete(fn);
     },
     update(updater: (oldValue: S) => S) {
+      const key = JSON.stringify(params);
       value = updater(value as S);
+      fnCache.set(key, value);
       subs.forEach(sub => {
         sub(value as S);
       });
@@ -96,54 +110,42 @@ export const asyncAtom = <P, S>(fn: (p: P) => Promise<S>): AsyncAtom<P, S> => {
   };
 };
 
-export const useAsyncAtom = <P, S>(a: AsyncAtom<P, S>, params: P) => {
-  const [, toggle] = useState(false);
-  useEffect(() => {
-    return a.subscribe(() => toggle(v => !v));
-  }, []);
-  const v = a.compute(params);
-  if (v instanceof Error) {
-    throw v;
-  } else if (v instanceof Promise) {
-    throw v;
-  } else {
-    return v;
-  }
-};
+export const createUseAtom =
+  ({ useState, useEffect }: StateContainerProps) =>
+    <S>(atom: Atom<S>): S => {
+      const [data, setData] = useState(atom.getValue());
+      useEffect(() => {
+        return atom.subscribe((value) => {
+          setData(value);
+        });
+      }, []);
+      return data;
+    };
 
-type PromiseFunc<S, P> = (p: P) => Promise<S>;
 
-const usePromiseCache: Map<Function, Map<string, any>> = new Map();
-export const usePromise = <S, P>(fn: PromiseFunc<S, P>, params: P): [S | null, (v: S) => void] => {
-  const [data, setData] = useState<boolean>(false);
-  const fnCache = usePromiseCache.get(fn) || new Map();
-  if (!usePromiseCache.get(fn)) {
-    usePromiseCache.set(fn, fnCache);
-  }
-  const key = typeof params === 'string' ? params : JSON.stringify(params);
-  const value = fnCache.get(key);
-  if (value) {
-    if (value instanceof Promise) {
-      throw value;
-    } else if (value instanceof Error || value?.errors) {
-      throw value;
-    }
-    return [
-      value,
-      v => {
-        fnCache.set(key, v);
-        setData(!data);
-      },
-    ];
-  }
+export const createUseAsyncAtom =
+  ({ useState, useEffect }: StateContainerProps) =>
+    <P, S>(a: AsyncAtom<P, S>, params: P) => {
+      const [, toggle] = useState(false);
+      useEffect(() => {
+        return a.subscribe(() => toggle((v) => !v));
+      }, []);
+      return a.compute(params);
+    };
 
-  fnCache.set(
-    key,
-    fn(params)
-      .then(res => {
-        fnCache.set(key, res);
-      })
-      .catch(err => fnCache.set(key, err))
-  );
-  throw fnCache.get(key);
-};
+export const createUseAsyncAtomSuspend =
+  ({ useState, useEffect }: StateContainerProps) =>
+    <P, S>(a: AsyncAtom<P, S>, params: P) => {
+      const [, toggle] = useState(false);
+      useEffect(() => {
+        return a.subscribe(() => toggle((v) => !v));
+      }, []);
+      const v = a.compute(params);
+      if (v instanceof Error) {
+        return { err: v, data: null, loading: false };
+      } else if (v instanceof Promise) {
+        return { err: null, data: null, loading: true };
+      } else {
+        return { err: null, data: null, loading: true };
+      }
+    };
