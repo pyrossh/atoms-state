@@ -1,4 +1,4 @@
-# atoms
+# atoms-state
 
 [![Version](https://img.shields.io/npm/v/atoms-state?style=flat-square&color=blue)](https://www.npmjs.com/package/atoms-state)
 
