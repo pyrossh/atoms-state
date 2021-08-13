@@ -1,4 +1,4 @@
-import { atom } from '../src';
+import { atom } from './index';
 
 describe('atom', () => {
   it('getValue', () => {
