@@ -2,7 +2,7 @@
   "name": "atoms-state",
   "author": "pyros.sh",
   "description": "A simple statemanagement library for react",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "type": "module",
   "main": "index.js",
