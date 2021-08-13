@@ -4,18 +4,14 @@
 
 A simple statemanagement library for react.
 
-```sh
-npm i atoms-state
-```
+`npm i atoms-state` 
 
 ## Usage
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { atom, createUseAtom } from 'atoms-state';
-
-const useAtom = createUseAtom({ useState, useEffect });
+import { atom, useAtom } from 'atoms-state';
 
 const countAtom = atom(10);
 const sumAtom = atom(get => get(countAtom) + 10);
@@ -50,9 +46,7 @@ ReactDOM.render(<Counter />, document.getElementById('root'));
 ```js
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { asyncAtom, createUseAsyncAtomSuspend } from 'atoms-state';
-
-const useAsyncAtom = createUseAsyncAtomSuspend({ useState, useEffect });
+import { asyncAtom, useAsyncAtom } from 'atoms-state';
 
 const todoAtom = asyncAtom(async ({ id }) => {
   const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);

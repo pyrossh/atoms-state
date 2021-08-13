@@ -25,4 +25,11 @@ describe('atom', () => {
     sumAtom.subscribe(newValue => expect(newValue).toEqual(20));
     atomOne.update(v => v + 5);
   });
+
+  // it('useAtom', async () => {
+  // })
 });
+
+describe('asyncAtom', () => {});
+
+describe('usePromise', () => {});
