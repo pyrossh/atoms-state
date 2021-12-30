@@ -172,8 +172,10 @@ export const Storage = {
 };
 
 export const useAsyncStorage = (key, initialValue) => {
-  const [loading, setLoading] = useState(true);
-  const [storedValue, setStoredValue] = useState(initialValue);
+  const [storedValue, setStoredValue] = useState({
+    ...initialValue,
+    loading: true,
+  });
   const setData = async (v) => {
     await Storage.setItem(key, v);
   };
@@ -183,14 +185,13 @@ export const useAsyncStorage = (key, initialValue) => {
         if (v) {
           setData(v);
         }
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => setStoredValue({ ...storedValue, loading: false }));
     return Storage.subscribe(key, (v) => {
       setStoredValue(v);
     });
   }, [key, JSON.stringify(initialValue)]);
-  return [storedValue || initialValue, setData, loading];
+  return [storedValue, setData];
 };
 
 export const fields = {};

@@ -52,4 +52,4 @@ declare namespace Storage {
   export function unsubscribe(key: string, cb: Function): void;
 }
 
-export function useAsyncStorage<T>(key: string, initial: T): [T, (v: T) => void, boolean];
+export function useAsyncStorage<T>(key: string, initial: T & { loading?: boolean }): [T, (v: T) => void];
