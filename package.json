@@ -1,8 +1,8 @@
 {
   "name": "atoms-state",
   "author": "pyros.sh",
-  "description": "A simple statemanagement library for react",
-  "version": "0.6.0",
+  "description": "State management and common hooks",
+  "version": "0.7.0",
   "license": "MIT",
   "type": "module",
   "main": "index.js",
@@ -42,5 +42,9 @@
     "singleQuote": true,
     "arrowParens": "always",
     "trailingComma": "all"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.14",
+    "dot-object": "^2.1.4"
   }
 }
