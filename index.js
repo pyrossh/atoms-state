@@ -139,11 +139,7 @@ export const Storage = {
     return item ? JSON.parse(item) : null;
   },
   async setItem(key, value) {
-    if (value) {
-      await AsyncStorage.setItem(key, JSON.stringify(value));
-    } else {
-      await AsyncStorage.removeItem(key);
-    }
+    await AsyncStorage.setItem(key, JSON.stringify(value));
     if (this.listeners[key]) {
       for (const cb of this.listeners[key]) {
         cb(value);
@@ -152,6 +148,11 @@ export const Storage = {
   },
   async removeItem(key) {
     await AsyncStorage.removeItem(key);
+    if (this.listeners[key]) {
+      for (const cb of this.listeners[key]) {
+        cb(null);
+      }
+    }
   },
   async clear() {
     await AsyncStorage.clear();

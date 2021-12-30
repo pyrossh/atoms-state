@@ -43,7 +43,7 @@ export function useForm<T>(
   onSubmit: (d: T) => Promise<void>;
 };
 
-declare module 'Storage' {
+declare namespace Storage {
   export function setItem<T>(key: string, value: T): boolean;
   export function getItem<T>(key: string): T;
   export function removeItem(key: string): void;
