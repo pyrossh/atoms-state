@@ -184,6 +184,8 @@ export const useAsyncStorage = (key, initialValue) => {
       .then((v) => {
         if (v) {
           setData(v);
+        } else {
+          setStoredValue({ ...initialValue, loading: false });
         }
       })
       .catch(() => setStoredValue({ ...storedValue, loading: false }));
