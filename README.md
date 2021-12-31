@@ -1,10 +1,8 @@
 # atoms-state
 
-[![Version](https://img.shields.io/npm/v/atoms-state?style=flat-square&color=blue)](https://www.npmjs.com/package/atoms-state)
+State management and common hooks
 
-A simple statemanagement library for react.
-
-`npm i atoms-state` 
+`npm i @pyros2097/atoms-state`
 
 ## Usage
 
@@ -14,14 +12,14 @@ import ReactDOM from 'react-dom';
 import { atom, useAtom } from 'atoms-state';
 
 const countAtom = atom(10);
-const sumAtom = atom(get => get(countAtom) + 10);
+const sumAtom = atom((get) => get(countAtom) + 10);
 
 const increment = () => {
-  countAtom.update(count => count + 1);
+  countAtom.update((count) => count + 1);
 };
 
 const decrement = () => {
-  countAtom.update(count => count - 1);
+  countAtom.update((count) => count - 1);
 };
 
 const Counter = () => {
@@ -54,7 +52,7 @@ const todoAtom = asyncAtom(async ({ id }) => {
 });
 
 const completeTodo = () => {
-  todoAtom.update(todo => ({ ...todo, completed: !todo.completed }));
+  todoAtom.update((todo) => ({ ...todo, completed: !todo.completed }));
 };
 
 const Counter = () => {
@@ -75,6 +73,6 @@ ReactDOM.render(
   <Suspense fallback={<div>Loading</div>}>
     <Counter />
   </Suspense>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 ```

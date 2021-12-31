@@ -1,5 +1,5 @@
 {
-  "name": "atoms-state",
+  "name": "@pyros2097/atoms-state",
   "author": "pyros.sh",
   "description": "State management and common hooks",
   "version": "0.7.2",
@@ -17,12 +17,7 @@
   "keywords": [
     "react",
     "react-native",
-    "atoms",
-    "atoms-state",
-    "atoms-ui",
-    "atoms-utils",
-    "state",
-    "pyros.sh"
+    "atoms-state"
   ],
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
