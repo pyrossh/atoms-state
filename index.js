@@ -183,12 +183,13 @@ export const useAsyncStorage = (key, initialValue) => {
     Storage.getItem(key)
       .then((v) => {
         if (v) {
-          setData(v);
+          setData({ ...v, loading: false });
         } else {
-          setStoredValue({ ...initialValue, loading: false });
+          setData({ ...initialValue, loading: false });
         }
       })
-      .catch(() => setStoredValue({ ...storedValue, loading: false }));
+      .catch((err) => setStoredValue({ ...initialValue, loading: false, err }));
+
     return Storage.subscribe(key, (v) => {
       setStoredValue(v);
     });
@@ -196,7 +197,21 @@ export const useAsyncStorage = (key, initialValue) => {
   return [storedValue, setData];
 };
 
-export const fields = {};
+export const Fields = {
+  data: {},
+  keys() {
+    return Object.keys(this.data);
+  },
+  get(k) {
+    return this.data[k];
+  },
+  set(k, v) {
+    this.data[k] = v;
+  },
+  remove(k) {
+    delete this.data[k];
+  },
+};
 
 export const useField = (name) => {
   const [error, setError] = useState('');
@@ -212,79 +227,97 @@ export const useField = (name) => {
     name,
     error,
     setError: setErrorMessage,
+    getField: () => Fields.get(name),
     registerField: (f) => {
-      fields[name] = {
+      const oldField = Fields.get(name) || {};
+      Fields.set(name, {
+        ...oldField,
         ...f,
         getError: () => errorRef.current,
         setError: setErrorMessage,
-      };
+      });
       return () => {
-        delete fields[name];
+        // TODO: this remove happens after refresh so that state persists for 1 render
+        // could cause wrong calcuations later on
+        Fields.remove(name);
       };
     },
   };
 };
 
-export const useForm = (initial, submit) => {
+export const useForm = (initial, submit, watchOn = []) => {
   const [error, setError] = useState('');
+  const [, rerender] = useState(false);
+  const refresh = () => rerender((v) => !v);
   const getData = () => {
     const obj = {};
-    for (const name of Object.keys(fields)) {
-      obj[name] = fields[name].get();
+    for (const name of Fields.keys()) {
+      obj[name] = Fields.get(name).get();
     }
     return dot.object(obj);
   };
   const setData = useCallback((data) => {
     const dotData = dot.dot(data);
-    for (const name of Object.keys(fields)) {
-      fields[name].set(dotData[name]);
+    for (const name of Fields.keys()) {
+      Fields.get(name).set(dotData[name]);
     }
   }, []);
   useEffect(() => {
     if (initial) {
       setData(initial);
     }
-  }, [initial, setData]);
+  }, [JSON.stringify(initial), setData]);
+  useEffect(() => {
+    for (const name of watchOn) {
+      const field = Fields.get(name);
+      if (field) {
+        Fields.set(name, {
+          ...field,
+          watch: refresh,
+        });
+      }
+    }
+  }, [Fields.keys().length]);
   return {
     error,
     setError,
     getData,
     setData,
     clear: () => {
-      for (const name of Object.keys(fields)) {
-        fields[name].clear();
+      for (const name of Fields.keys()) {
+        Fields.get(name).clear();
       }
     },
     reset: () => {
       setData(initial);
     },
     getFieldValue: (name) => {
-      const field = fields[name];
+      const field = Fields.get(name);
       if (field) {
         return field.get();
       }
     },
     setFieldValue: (name, value) => {
-      const field = fields[name];
+      const field = Fields.get(name);
       if (field) {
         field.set(value);
       }
     },
     clearFieldValue: (name) => {
-      const field = fields[name];
+      const field = Fields.get(name);
       if (field) {
         field.clear();
       }
     },
     getFieldError: (name) => {
-      const field = fields[name];
+      const field = Fields.get(name);
       if (field) {
         return field.getError();
       }
       return '';
     },
     setFieldError: (name, value) => {
-      const field = fields[name];
+      const field = Fields.get(name);
       if (field) {
         field.setError(value);
       }
@@ -293,11 +326,11 @@ export const useForm = (initial, submit) => {
       try {
         const data = getData();
         setError('');
-        for (const name of Object.keys(fields)) {
-          fields[name].setError('');
+        for (const name of Fields.keys()) {
+          Fields.get(name).setError('');
         }
-        const allValid = Object.keys(fields)
-          .map((key) => fields[key])
+        const allValid = Fields.keys()
+          .map((key) => Fields.get(key))
           .reduce((acc, field) => acc && field.getError() === '', true);
         if (allValid) {
           await submit(data);
@@ -306,7 +339,7 @@ export const useForm = (initial, submit) => {
         // this is for validation errors
         if (err.error && typeof err.error !== 'string') {
           Object.keys(err.error).forEach((k) => {
-            const field = fields[k];
+            const field = Fields.get(k);
             if (field) {
               field.setError(err.error[k]);
             }

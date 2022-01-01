@@ -2,7 +2,7 @@
   "name": "@pyros2097/atoms-state",
   "author": "pyros.sh",
   "description": "State management and common hooks",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "license": "MIT",
   "type": "module",
   "main": "index.js",

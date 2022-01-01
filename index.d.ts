@@ -18,16 +18,25 @@ export declare const useAsyncAtom: <P, S>(a: AsyncAtom<P, S>, params: P) => S;
 declare type PromiseFunc<S, P> = (p: P) => Promise<S>;
 export declare const usePromise: <S, P>(fn: PromiseFunc<S, P>, params: P) => [S, (v: S) => void];
 
+export type Field<T> = {
+  get: () => T;
+  set: (v: T) => void;
+  clear: () => void;
+  watch?: () => void;
+};
+
 export function useField<T>(name: string): {
   name: string;
   error: string;
   setError: (v: string | undefined) => void;
-  registerField: (f: { get: () => T; set: (v: T) => void; clear: () => void }) => void;
+  getField: () => Field<T>;
+  registerField: (f: Field<T>) => void;
 };
 
 export function useForm<T>(
   initial: T,
   submit: (d: T) => Promise<void>,
+  watchOn?: Array<string>,
 ): {
   error: string;
   setError: (v?: string) => void;
