@@ -1,10 +1,6 @@
 # atoms-state
 
-[![Version](https://badge.fury.io/gh/pyros2097%2Fatoms-state.svg)](https://github.com/pyros2097/atoms-state/packages)
-
 State management and common hooks
-
-`npm i @pyros2097/atoms-state`
 
 ## Usage
 
